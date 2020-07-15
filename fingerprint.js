@@ -11,9 +11,10 @@ const stft = require("stft");
 const chart = require('./svg');
 
 const samplerate = 44100;
-// const samplesize = 8192;
 const samplesize = 8192;
-const samplestep = 4410;
+// const samplesize = 16384;
+// const samplestep = 4410;
+const samplestep = 100;
 // const overlap = 2;
 
 function stats(wav, filename) {
@@ -30,23 +31,20 @@ function getAudio(input) {
 	execSync(`ffmpeg -i "${input}" -ac 1 -ar ${samplerate} -vn "${tempfile}"`, {stdio: 'pipe'});
 	const audio = wav.decode(readFileSync(tempfile));
 	unlinkSync(tempfile);
-	stats(audio, input.split('/').pop().split('\\').pop());
+	// stats(audio, input.split('/').pop().split('\\').pop());
 	return audio.channelData[0];
 }
 
-function fourier(wav) {
-	return ft(wav); // .slice(0, 20);
+function subPrint(wav) {
+	return maxPos(ft(wav).slice(100, 1000));
 }
 
-function fingerprint(wav, length = 9999999) {
-	let start = 0;
+function fingerprint(wav, start = 0, length = 9999999) {
 	let count = 0;
 	const fingerprint = [];
 	while (start + samplesize < wav.length && count < length) {
 		let slice = wav.slice(start, start + samplesize);
-		const print = fourier(slice);
-		// fingerprint.push(print);
-		fingerprint.push(maxPos(print));
+		fingerprint.push(subPrint(slice));
 		start += samplestep;
 		count++;
 	}
@@ -74,35 +72,37 @@ function maxPos(arr) {
 function compare(hay, needle) {
 	let correlation = 0;
 	for (let straw = 0; straw < needle.length; straw++) {
-		if (hay[straw] && needle[straw]) correlation += Math.abs(hay[straw] - needle[straw]);
+		correlation += Math.abs(hay[straw] - needle[straw]);
 	}
 	return correlation;
 }
 
-function rolling(needle, haystack) {
+function rolling(needle, haystack, expected) {
 	needle = fingerprint(getAudio(needle));
+	// console.log('Needle:', needle);
 	haystack = getAudio(haystack);
-	const hay = fingerprint(haystack, needle.length);
+	// console.log('Looking for:', fingerprint(haystack, samplerate * expected, needle.length));
+	const hay = fingerprint(haystack, 0, needle.length);
 	let start = needle.length * samplestep;
-	let best = 0;
-	let sample = 0;
 	const now = Date.now();
+	const results = {score: 999999, sample: 0};
+	let fp = hay.slice();
 	while (start + samplestep + samplesize < haystack.length) {
 		const correlation = compare(hay, needle);
-		if (correlation > best) {
-			best = correlation;
-			sample = start - (needle.length * samplestep);
+		if (correlation < results.score) {
+			results.score = correlation;
+			results.sample = start - (needle.length * samplestep);
+			fp = hay.slice();
 		}
 		hay.shift();
 		start += samplestep;
 		let slice = haystack.slice(start, start + samplesize);
-		// hay.push(fourier(slice));
-		hay.push(maxPos(fourier(slice)));
+		hay.push(subPrint(slice));
 	}
 	const delta = round((Date.now() - now) / 1000);
-	let timecode = round(sample / samplerate);
-	// if (best < 3) timecode = -999;
-	return {score: best, timecode, delta};
+	let timecode = round(results.sample / samplerate);
+	// console.log('Found:', fp);
+	return {...results, timecode, delta};
 }
 
 function compareMovie(movie) {
@@ -154,10 +154,10 @@ function movies() {
 	for (const movie of movies) {
 		if (movie.file) {
 			const haystack = resolve(movie.folder || './test', movie.file);
-			const results = rolling(needle, haystack);
-			console.log();
+			const results = rolling(needle, haystack, movie.time);
+			// console.log();
 			console.log('Best fit', round(results.score), 'at', results.timecode, 'seconds, expected', movie.time, 'seconds - delta', round(Math.abs(results.timecode - movie.time)), 'seconds. Took', results.delta, 'seconds to process.');
-			console.log();
+			// console.log();
 		}
 	}
 }
