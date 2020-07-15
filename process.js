@@ -34,8 +34,8 @@ const wilhelm = getAudio(resolve('./samples', 'Wilhelm_Scream.ogg'));
 console.log();
 
 const movies = [
-	// resolve('./samples', 'Bare essentials of safety from Air New Zealand.mkv'),
-	{file: 'Sintel (2010)-trailer.mkv', time: 'XXX'},
+	{file: 'Bare essentials of safety from Air New Zealand.mkv', time: -999},
+	{file: 'Sintel (2010)-trailer.mkv', time: -999},
 	{file: 'Batman Returns (1992).mkv', time: 7.5},
 	{file: 'Indiana Jones and the Last Crusade (1989).mkv', time: 4.2},
 	{file: 'Raiders of the Lost Ark (1981).mkv', time: 4.2},
@@ -80,7 +80,8 @@ function compare(movie) {
 			sample = bail * interval / overlap;
 		}
 	}
-	const time = round(sample / rate);
+	let time = round(sample / rate);
+	if (best < 3) time = -999;
 	console.log('Best fit', round(best), 'at location', sample, 'time', time, 'seconds, expected', movie.time, 'seconds, delta ', round(Math.abs(time - movie.time)));
 	console.log();
 }
