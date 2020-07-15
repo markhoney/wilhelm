@@ -3,11 +3,6 @@ const {resolve} = require('path');
 const {execSync} = require('child_process');
 const wav = require('node-wav');
 const ft = require('fourier-transform');
-const Correlation = require('node-correlation');
-const {DFT, FFT} = require('dsp.js');
-const dft = require("dft-easy");
-const stft = require("stft");
-// const normalise = require('array-normalize');
 const chart = require('./svg');
 
 const samplerate = 44100;
@@ -51,20 +46,6 @@ function fingerprint(wav, start = 0, length = 9999999) {
 	return fingerprint;
 }
 
-function wilhelmPrint() {
-	const wilhelm = getAudio(resolve('./samples', 'Wilhelm_Scream.ogg'));
-	const start = 2048;
-	chart(ft(wilhelm.slice(start, start + Math.pow(2, 15))));
-}
-
-function compareArrays(hay, needle) {
-	let correlation = 0;
-	for (let straw = 0; straw < needle.length; straw++) {
-		if (hay[straw] && needle[straw]) correlation += Correlation.calc(hay[straw].slice(0, 4000), needle[straw].slice(0, 4000));
-	}
-	return correlation;
-}
-
 function maxPos(arr) {
 	return arr.indexOf(Math.max(...arr));
 }
@@ -77,14 +58,21 @@ function compare(hay, needle) {
 	return correlation;
 }
 
+function dateDelta(now) {
+	// const now = Date.now();
+	return round((Date.now() - now) / 1000);
+}
+
 function rolling(needle, haystack, expected) {
 	needle = fingerprint(getAudio(needle));
 	// console.log('Needle:', needle);
+	let now = Date.now();
 	haystack = getAudio(haystack);
+	const loadTime = dateDelta(now);
+	now = Date.now();
 	// console.log('Looking for:', fingerprint(haystack, samplerate * expected, needle.length));
 	const hay = fingerprint(haystack, 0, needle.length);
 	let start = needle.length * samplestep;
-	const now = Date.now();
 	const results = {score: 999999, sample: 0};
 	let fp = hay.slice();
 	while (start + samplestep + samplesize < haystack.length) {
@@ -99,53 +87,10 @@ function rolling(needle, haystack, expected) {
 		let slice = haystack.slice(start, start + samplesize);
 		hay.push(subPrint(slice));
 	}
-	const delta = round((Date.now() - now) / 1000);
+	const processTime = dateDelta(now);
 	let timecode = round(results.sample / samplerate);
 	// console.log('Found:', fp);
-	return {...results, timecode, delta};
-}
-
-function compareMovie(movie) {
-	const wav = getAudio(resolve('./test', movie.file));
-	const haystack = fingerprint(wav);
-	let best = 0;
-	for (let bail = 0; bail < haystack.length; bail++) {
-		let correlation = 0;
-		for (let straw = 0; straw < needle.length; straw++) {
-			// console.log(haystack[bail + straw]);
-			// console.log(needle[straw]);
-			if (haystack[bail + straw] && needle[straw]) correlation += Correlation.calc(haystack[bail + straw], needle[straw]);
-		}
-		if (correlation > best) {
-			best = correlation;
-			sample = bail * samplestep;
-		}
-	}
-	const time = round(sample / samplerate);
-	console.log('Best fit', round(best), 'at location', sample, 'time', time, 'seconds, expected', movie.time, 'seconds, delta ', round(Math.abs(time - movie.time)));
-	console.log();
-}
-
-function dfteasy() {
-	const wilhelm = getAudio(resolve('./samples', 'Wilhelm_Scream.ogg'));
-	console.log(dft(wilhelm.map((value, index) => ([index, value]))));
-}
-
-function fftcalc() {
-	const wilhelm = getAudio(resolve('./samples', 'Wilhelm_Scream.ogg'));
-	const start = 2048;
-	const size = Math.pow(2, 15);
-	let slice = wilhelm.slice(start, start + size);
-	// slice = new Uint8Array(slice);
-	const fft = new FFT(size, samplerate);
-	fft.forward(slice);
-	console.log(fft.spectrum);
-}
-
-function stftcalc() {
-	stft(1, 8192, (data) => {
-
-	}, {hop_size: 4410});
+	return {...results, timecode, loadTime, processTime};
 }
 
 function movies() {
@@ -155,15 +100,9 @@ function movies() {
 		if (movie.file) {
 			const haystack = resolve(movie.folder || './test', movie.file);
 			const results = rolling(needle, haystack, movie.time);
-			// console.log();
 			console.log('Best fit', round(results.score), 'at', results.timecode, 'seconds, expected', movie.time, 'seconds - delta', round(Math.abs(results.timecode - movie.time)), 'seconds. Took', results.delta, 'seconds to process.');
-			// console.log();
 		}
 	}
 }
 
 movies();
-// wilhelmPrint();
-// dfteasy();
-// fft();
-// stftcalc();
