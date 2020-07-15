@@ -1,14 +1,14 @@
-const {existsSync, readFileSync, writeFileSync, unlinkSync} = require('fs');
+const {existsSync, readFileSync, unlinkSync} = require('fs');
 const {resolve} = require('path');
 const {execSync} = require('child_process');
 const wav = require('node-wav');
 const ft = require('fourier-transform');
 const Correlation = require('node-correlation');
-const vega = require('vega');
 const {DFT, FFT} = require('dsp.js');
 const dft = require("dft-easy");
 const stft = require("stft");
 // const normalise = require('array-normalize');
+const chart = require('./svg');
 
 const samplerate = 44100;
 // const samplesize = 8192;
@@ -44,112 +44,22 @@ function fingerprint(wav, length = 9999999) {
 	const fingerprint = [];
 	while (start + samplesize < wav.length && count < length) {
 		let slice = wav.slice(start, start + samplesize);
-		let print = fourier(slice);
-		fingerprint.push(print);
+		const print = fourier(slice);
+		// fingerprint.push(print);
+		fingerprint.push(maxPos(print));
 		start += samplestep;
 		count++;
 	}
 	return fingerprint;
 }
 
-function chart(wave) {
-	// console.log(wave);
-	const values = ft(wave).map((value, index) => ({x: index, y: value}));
-	// console.log(values);
-	const chart = {
-		$schema: 'https://vega.github.io/schema/vega/v5.json',
-		description: 'Wilhelm Scream Frequency distribution',
-		width: 400,
-		height: 200,
-		padding: 5,
-		data: [{name: 'table', values}],
-		signals: [
-			{
-				name: 'interpolate',
-				value: 'linear',
-				bind: {
-					input: "select",
-					options: [
-						"basis",
-						"cardinal",
-						"catmull-rom",
-						"linear",
-						"monotone",
-						"natural",
-						"step",
-						"step-after",
-						"step-before",
-					],
-				},
-			},
-		],
-		scales: [
-			{
-				name: 'xscale',
-				type: 'linear',
-				range: 'width',
-				nice: true,
-				zero: false,
-				domain: {
-					data: 'table',
-					field: 'x',
-				},
-			},
-			{
-				name: 'yscale',
-				type: 'linear',
-				range: 'height',
-				nice: true,
-				zero: true,
-				domain: {
-					data: 'table',
-					field: 'y',
-				},
-			},
-		],
-		axes: [
-			{
-				orient: 'bottom',
-				scale: 'xscale',
-				tickCount: 10,
-			},
-			{
-				orient: 'left',
-				scale: 'yscale',
-			},
-		],
-		marks: [
-			{
-				type: 'line',
-				from: {
-					data: 'table',
-				},
-				encode: {
-					enter: {
-						x: {
-							scale: 'xscale',
-							field: 'x',
-						},
-						y: {
-							scale: 'yscale',
-							field: 'y',
-						},
-					},
-				},
-			},
-		],
-	};
-	const view = new vega.View(vega.parse(chart), {renderer: 'none'});
-	view.toSVG().then((svg) => writeFileSync('wilhelm.svg', svg));
-}
-
 function wilhelmPrint() {
 	const wilhelm = getAudio(resolve('./samples', 'Wilhelm_Scream.ogg'));
 	const start = 2048;
-	chart(wilhelm.slice(start, start + Math.pow(2, 15)));
+	chart(ft(wilhelm.slice(start, start + Math.pow(2, 15))));
 }
 
-function compare(hay, needle) {
+function compareArrays(hay, needle) {
 	let correlation = 0;
 	for (let straw = 0; straw < needle.length; straw++) {
 		if (hay[straw] && needle[straw]) correlation += Correlation.calc(hay[straw].slice(0, 4000), needle[straw].slice(0, 4000));
@@ -157,10 +67,21 @@ function compare(hay, needle) {
 	return correlation;
 }
 
-function rolling(haystack, expected) {
-	const wilhelm = getAudio(resolve('./samples', 'Wilhelm_Scream.ogg'));
-	const needle = fingerprint(wilhelm);
-	console.log();
+function maxPos(arr) {
+	return arr.indexOf(Math.max(...arr));
+}
+
+function compare(hay, needle) {
+	let correlation = 0;
+	for (let straw = 0; straw < needle.length; straw++) {
+		if (hay[straw] && needle[straw]) correlation += Math.abs(hay[straw] - needle[straw]);
+	}
+	return correlation;
+}
+
+function rolling(needle, haystack) {
+	needle = fingerprint(getAudio(needle));
+	haystack = getAudio(haystack);
 	const hay = fingerprint(haystack, needle.length);
 	let start = needle.length * samplestep;
 	let best = 0;
@@ -175,13 +96,13 @@ function rolling(haystack, expected) {
 		hay.shift();
 		start += samplestep;
 		let slice = haystack.slice(start, start + samplesize);
-		hay.push(fourier(slice));
+		// hay.push(fourier(slice));
+		hay.push(maxPos(fourier(slice)));
 	}
 	const delta = round((Date.now() - now) / 1000);
-	let time = round(sample / samplerate);
-	if (best < 3) time = -999;
-	console.log('Best fit', round(best), 'at', time, 'seconds, expected', expected, 'seconds - delta', round(Math.abs(time - expected)), 'seconds. Took', delta, 'seconds to process.');
-	console.log();
+	let timecode = round(sample / samplerate);
+	// if (best < 3) timecode = -999;
+	return {score: best, timecode, delta};
 }
 
 function compareMovie(movie) {
@@ -228,23 +149,16 @@ function stftcalc() {
 }
 
 function movies() {
-	const movies = [
-		{file: 'Bare essentials of safety from Air New Zealand.mkv', time: -999},
-		{file: 'Sintel (2010)-trailer.mkv', time: -999},
-		{file: 'Batman Returns (1992).mkv', time: 7.4},
-		{file: 'Indiana Jones and the Last Crusade (1989).mkv', time: 4.2},
-		{file: 'Raiders of the Lost Ark (1981).mkv', time: 4.4},
-		{file: 'Star Wars - Episode IV - A New Hope (1977).mkv', time: 6.8},
-		{file: 'Indiana Jones and the Temple of Doom (1984) - 1.mkv', time: 7.8},
-		{file: 'Indiana Jones and the Temple of Doom (1984) - 2.mkv', time: 5.6},
-		{file: 'Indiana Jones and the Temple of Doom (1984) - 3.mkv', time: 10.5},
-		{file: 'Star Wars - Episode V - The Empire Strikes Back (1980).mkv', time: 7.7},
-		// {file: 'The Enemies Within (2016).mkv', time: 4735},
-	];
+	const movies = require('./tests.json');
+	const needle = resolve('./samples', 'Wilhelm_Scream.ogg');
 	for (const movie of movies) {
-		// compareMovie(movie);
-		const haystack = getAudio(resolve('./test', movie.file));
-		rolling(haystack, movie.time);
+		if (movie.file) {
+			const haystack = resolve(movie.folder || './test', movie.file);
+			const results = rolling(needle, haystack);
+			console.log();
+			console.log('Best fit', round(results.score), 'at', results.timecode, 'seconds, expected', movie.time, 'seconds - delta', round(Math.abs(results.timecode - movie.time)), 'seconds. Took', results.delta, 'seconds to process.');
+			console.log();
+		}
 	}
 }
 
