@@ -1,4 +1,4 @@
-const {existsSync, readFileSync, unlinkSync} = require('fs');
+const {existsSync, readFileSync, unlinkSync, mkdirSync} = require('fs');
 const {resolve} = require('path');
 const {execSync} = require('child_process');
 const wav = require('node-wav');
@@ -28,6 +28,8 @@ function getAudio(input) {
 	return audio.channelData[0];
 }
 
+mkdirSync(resolve(__dirname, 'temp'), {recursive: true})
+
 const wilhelm = getAudio(resolve('./samples', 'Wilhelm_Scream.ogg'));
 console.log();
 
@@ -42,7 +44,7 @@ const movies = [
 	{file: 'Indiana Jones and the Temple of Doom (1984) - 2.mkv', time: 5.3},
 	{file: 'Indiana Jones and the Temple of Doom (1984) - 3.mkv', time: 10.5},
 	{file: 'Star Wars - Episode V - The Empire Strikes Back (1980).mkv', time: 7.5},
-	{file: 'The Enemies Within (2016).mkv', time: 4734},
+	// {file: 'The Enemies Within (2016).mkv', time: 4734},
 ];
 
 function fingerprint(wav) {
@@ -63,7 +65,7 @@ function fingerprint(wav) {
 const needle = fingerprint(wilhelm);
 
 function compare(movie) {
-	const wav = getAudio(resolve('./samples', movie.file));
+	const wav = getAudio(resolve('./test', movie.file));
 	const haystack = fingerprint(wav);
 	let best = 0;
 	for (let bail = 0; bail < haystack.length; bail++) {
