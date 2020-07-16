@@ -3,14 +3,11 @@ const {resolve} = require('path');
 const {execSync} = require('child_process');
 const wav = require('node-wav');
 const ft = require('fourier-transform');
-const chart = require('./svg');
+const slayer = require('slayer');
 
 const samplerate = 44100;
-const samplesize = 8192;
-// const samplesize = 16384;
-// const samplestep = 4410;
-const samplestep = 100;
-// const overlap = 2;
+const samplesize = 32768;
+const samplestep = 441;
 
 function stats(wav, filename) {
 	console.log(wav.sampleRate, 'Hz,', wav.channelData.length, 'channels,', wav.channelData[0].length, 'samples.', filename);
@@ -30,8 +27,17 @@ function getAudio(input) {
 	return audio.channelData[0];
 }
 
+function maxPos(arr) {
+	return arr.indexOf(Math.max(...arr));
+}
+
 function subPrint(wav) {
-	return maxPos(ft(wav).slice(100, 1000));
+	return maxPos(ft(wav)); // .slice(100, 10000)
+}
+
+async function peaks(arrayData) {
+	const spikes = await slayer().fromArray(arrayData);
+	console.log(spikes);
 }
 
 function fingerprint(wav, start = 0, length = 9999999) {
@@ -39,6 +45,9 @@ function fingerprint(wav, start = 0, length = 9999999) {
 	const fingerprint = [];
 	while (start + samplesize < wav.length && count < length) {
 		let slice = wav.slice(start, start + samplesize);
+		/* slayer().fromArray(ft(slice)).then((spikes) => {
+			console.log(spikes);
+		}); */
 		fingerprint.push(subPrint(slice));
 		start += samplestep;
 		count++;
@@ -46,16 +55,12 @@ function fingerprint(wav, start = 0, length = 9999999) {
 	return fingerprint;
 }
 
-function maxPos(arr) {
-	return arr.indexOf(Math.max(...arr));
-}
-
 function compare(hay, needle) {
 	let correlation = 0;
 	for (let straw = 0; straw < needle.length; straw++) {
 		correlation += Math.abs(hay[straw] - needle[straw]);
 	}
-	return correlation;
+	return correlation / needle.length;
 }
 
 function dateDelta(now) {
@@ -65,7 +70,7 @@ function dateDelta(now) {
 
 function rolling(needle, haystack, expected) {
 	needle = fingerprint(getAudio(needle));
-	// console.log('Needle:', needle);
+	console.log('Needle:', needle);
 	let now = Date.now();
 	haystack = getAudio(haystack);
 	const loadTime = dateDelta(now);
@@ -80,7 +85,7 @@ function rolling(needle, haystack, expected) {
 		if (correlation < results.score) {
 			results.score = correlation;
 			results.sample = start - (needle.length * samplestep);
-			fp = hay.slice();
+			// fp = hay.slice();
 		}
 		hay.shift();
 		start += samplestep;
@@ -96,11 +101,16 @@ function rolling(needle, haystack, expected) {
 function movies() {
 	const movies = require('./tests.json');
 	const needle = resolve('./samples', 'Wilhelm_Scream.ogg');
+	// const needle = resolve('./samples', 'Wilhelm_tk4.wav');
+	// const needle = resolve('./samples', 'The_Howie_Long_Scream.ogg');
+	// const needle = resolve('./samples', 'uniphone.wav');
+	// const needle = resolve('./samples', 'castlethunder.wav');
+	// const needle = resolve('./samples', "John_Weissmuller's_MGM_Tarzan_Yell.ogg");
 	for (const movie of movies) {
 		if (movie.file) {
 			const haystack = resolve(movie.folder || './test', movie.file);
 			const results = rolling(needle, haystack, movie.time);
-			console.log('Best fit', round(results.score), 'at', results.timecode, 'seconds, expected', movie.time, 'seconds - delta', round(Math.abs(results.timecode - movie.time)), 'seconds. Took', results.delta, 'seconds to process.');
+			console.log('Best fit', round(results.score), 'at', results.timecode, 'seconds, expected', movie.time, 'seconds. Delta', round(Math.abs(results.timecode - movie.time)), 'seconds. Took', results.loadTime, 'seconds to load,', results.processTime, 'seconds to process:', movie.file);
 		}
 	}
 }
