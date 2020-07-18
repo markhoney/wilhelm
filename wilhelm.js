@@ -25,11 +25,24 @@ function extractAudio(input) {
 	return tempfile;
 }
 
+function maxPos(arr) {
+	return arr.indexOf(Math.max(...arr));
+}
+
+function subPrint(wav) {
+	return maxPos(ft(wav)); // .slice(100, 10000)
+}
+
 function getAudio(input) {
 	const tempfile = extractAudio(input);
 	const audio = nodewav.decode(readFileSync(tempfile));
 	unlinkSync(tempfile);
 	return audio.channelData[0];
+}
+
+async function peaks(arrayData) {
+	const spikes = await slayer().fromArray(arrayData);
+	console.log(spikes);
 }
 
 async function analyse() {
