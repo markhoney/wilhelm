@@ -7,7 +7,7 @@
 	{"file": "Indiana Jones and the Temple of Doom (1984) - 2.mkv", "time": 5.6},
 	{"file": "Indiana Jones and the Temple of Doom (1984) - 3.mkv", "time": 10.5},
 	{"file": "Star Wars - Episode V - The Empire Strikes Back (1980).mkv", "time": 7.7},
-	{"file": "Bare essentials of safety from Air New Zealand.mkv", "time": -999},
+	{"nofile": "Bare essentials of safety from Air New Zealand.mkv", "time": -999},
 	{"file": "Sintel (2010)-trailer.mkv", "time": -999},
 	{"nofile": "The Enemies Within (2016).mkv", "folder": "M:\\media\\Video\\Movies\\The Enemies Within (2016)", "time": 4735}
 ]
