@@ -4,13 +4,14 @@
   "description": "Wilhelm Scream",
   "main": "process.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "up": "yarn upgrade && yarn upgrade-interactive --latest"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "abr-xcorr": "^1.0.0",
-    "array-normalize": "^1.1.4",
+    "array-normalize": "^2.0.0",
     "audio-analyser": "^1.0.2",
     "chromaprint": "^0.1.0",
     "concat-stream": "^2.0.0",
@@ -18,7 +19,7 @@
     "dsp.js": "^1.0.1",
     "ffmpeg": "^0.0.4",
     "ffmpeg-extract-audio": "^1.0.2",
-    "ffmpeg-stream": "^0.6.0",
+    "ffmpeg-stream": "^0.7.0",
     "fft-windowing": "^0.1.4",
     "fourier": "^0.3.0",
     "fourier-transform": "^1.1.2",
