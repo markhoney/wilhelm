@@ -1,0 +1,12 @@
+{
+	"sample": {
+		"rate": 44100,
+		"step": 4410,
+		"size": 8192
+	},
+	"chart": {
+		"width": 160,
+		"height": 60
+	},
+	"console": true
+}

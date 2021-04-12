@@ -1,24 +1,28 @@
 {
   "name": "wilhelm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wilhelm Scream",
-  "main": "process.js",
+  "main": "find.js",
   "scripts": {
+    "find": "node find",
+    "up": "yarn upgrade && yarn upgrade-interactive --latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "abr-xcorr": "^1.0.0",
-    "array-normalize": "^1.1.4",
+    "array-normalize": "^2.0.0",
+    "asciichart": "^1.5.25",
     "audio-analyser": "^1.0.2",
+    "babar": "^0.2.0",
     "chromaprint": "^0.1.0",
     "concat-stream": "^2.0.0",
     "dft-easy": "^1.1.0",
     "dsp.js": "^1.0.1",
     "ffmpeg": "^0.0.4",
     "ffmpeg-extract-audio": "^1.0.2",
-    "ffmpeg-stream": "^0.6.0",
+    "ffmpeg-stream": "^0.7.0",
     "fft-windowing": "^0.1.4",
     "fourier": "^0.3.0",
     "fourier-transform": "^1.1.2",
@@ -29,6 +33,7 @@
     "stft": "^0.0.0",
     "vega": "^5.12.3",
     "wav": "^1.0.2",
-    "window-function": "^2.1.0"
+    "window-function": "^2.1.0",
+    "yargs": "^16.2.0"
   }
 }
