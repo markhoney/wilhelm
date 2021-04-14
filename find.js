@@ -14,14 +14,14 @@ var applyWindow = require('window-function/apply');
 const babar = require('babar');
 // const config = require('./config');
 
-const Analyser = require('audio-analyser');
+/* const Analyser = require('audio-analyser');
 const analyser = new Analyser();
 analyser.on('data', function () {
 	const freq = this.getFrequencyData();
 	console.log(freq);
 	console.log(Math.max(...freq));
 	console.log(freq.indexOf(Math.max(...freq)));
-});
+}); */
 
 function round(num) {
 	return Math.round((num + Number.EPSILON) * 100) / 100;
@@ -58,12 +58,14 @@ function filter(peaks, threshold) {
 		.filter((peak) => peak.magnitude > threshold);
 }
 
+function printGraph(fft) {
+	console.clear();
+	console.log(babar(normalise(fft).map((value, index) => [index, value]), {width: config.chart.width || 80, height: config.chart.height || 40}));
+}
+
 async function subPrint(wav, threshold) {
 	const fft = ft(applyWindow(wav, hamming));
-	if (config.chart && config.chart.height) {
-		console.clear();
-		console.log(babar(normalise(fft).map((value, index) => [index, value]), {width: config.chart.width || 80, height: config.chart.height || 40}));
-	}
+	if (config.chart && config.chart.height) printGraph(fft);
 	let peaks = await slayer().fromArray(fft);
 	peaks = peaks.map((peak) => ({frequency: Math.round(peak.x * config.sample.rate / config.sample.size), magnitude: peak.y}));
 	peaks = filter(normalise(peaks), threshold);
