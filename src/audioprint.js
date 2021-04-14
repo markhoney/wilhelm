@@ -38,21 +38,35 @@ function subPrint(wav, window) {
 		bands.push([index + bins.length, max]);
 	}
 	const average = bands.reduce((sum, band) => sum + band[1], 0) / (bands.length + 1);
-	// console.log(average, bands);
-	return bands.filter((band) => band[1] >= average).reverse();
+	return bands.filter((band) => band[1] >= average).reverse().map((band) => band[0]);
 }
 
-function audioPrint(wav, samplerate, samplesize, samplestep, window, start = 0, length = 9999999) {
+function audioPrint(wav, samplesize, samplestep, window, start = 0, length = 9999999) {
 	window = window ? require('window-function/' + window) : null;
 	let count = 0;
 	const fingerprint = [];
 	while (start + samplesize < wav.length && count < length) {
 		let slice = wav.slice(start, start + samplesize);
-		fingerprint.push(subPrint(slice, window));
+		// const mid = start + (samplesize / 2);
+		const mid = Math.floor((start + (samplesize / 2)) / samplesize);
+		const bands = subPrint(slice, window).map((freq) => [mid, freq]);
+		fingerprint.push(...bands);
 		start += samplestep;
 		count++;
 	}
 	return fingerprint;
 }
 
-module.exports = audioPrint;
+function zones(wav, samplesize, samplestep, window, gap = 0, points = 5) {
+	const print = audioPrint(wav, samplesize, samplestep, window);
+	const zones = [];
+	while(print.length > gap + points) {
+		const anchor = print.shift();
+		for (let i = gap; i < gap + points; i++) {
+			zones.push([anchor[0], anchor[1], print[i][1], print[i][0] - anchor[0]]);
+		}
+	}
+	return zones;
+}
+
+module.exports = zones;
