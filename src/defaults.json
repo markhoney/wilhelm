@@ -3,7 +3,7 @@
 	"sample": {
 		"rate": 44100,
 		"step": 4410,
-		"size": 8192,
+		"size": 4096,
 		"window": "hamming"
 	},
 	"peak": {
