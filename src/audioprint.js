@@ -57,6 +57,19 @@ function audioPrint(wav, samplesize, samplestep, window, start = 0, length = 999
 	return fingerprint;
 }
 
+function zoneDict(wav, samplesize, samplestep, window, gap = 0, points = 5) {
+	const print = audioPrint(wav, samplesize, samplestep, window);
+	const zones = {};
+	while(print.length > gap + points) {
+		const anchor = print.shift();
+		for (let i = gap; i < gap + points; i++) {
+			if (!zones[anchor[0]]) zones[anchor[0]] = {};
+			if (!zones[anchor[0]][anchor[1]]) zones[anchor[0]][anchor[1]] = [print[i][1], print[i][0] - anchor[0]];
+		}
+	}
+	return zones;
+}
+
 function zones(wav, samplesize, samplestep, window, gap = 0, points = 5) {
 	const print = audioPrint(wav, samplesize, samplestep, window);
 	const zones = [];

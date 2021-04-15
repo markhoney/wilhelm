@@ -1,14 +1,13 @@
 {
-	"expexted": 0,
 	"sample": {
 		"rate": 44100,
 		"step": 4410,
 		"size": 4096,
 		"window": "hamming"
 	},
-	"peak": {
-		"threshold": 0.4,
-		"ratio": 2
+	"fingerprint": {
+		"gap": 0,
+		"points": 5
 	},
 	"chart": {
 		"width": 160,
