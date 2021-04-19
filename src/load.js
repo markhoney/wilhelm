@@ -10,10 +10,16 @@ function extractAudio(input, samplerate = 44100) {
 	return tempfile;
 }
 
-function getAudio(input, samplerate) {
+function getWav(input, samplerate) {
 	const tempfile = extractAudio(input, samplerate);
-	const audio = nodewav.decode(readFileSync(tempfile));
+	const wav = readFileSync(tempfile);
 	unlinkSync(tempfile);
+	return wav;
+}
+
+function getAudio(input, samplerate) {
+	const wav = getWav(input, samplerate);
+	const audio = nodewav.decode(wav);
 	return audio.channelData[0];
 }
 

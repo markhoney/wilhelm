@@ -18,3 +18,6 @@ The code uses an efficient Fast Fourier Transform (FFT) library to calculate the
 Once we have an array of frequency magnitudes, we use the fingerprinting method used by Shazam, thanks to a [great breakdown](http://coding-geek.com/how-shazam-works/) of the technology from the Coding Geek website. We first separate our frequencies into groups, with the group size being larger the higher the frequency. We then find the frequency in each of these groups with the largest magnitude, and discard the other frequencies. We average the magnitude of our resulting frequenky peaks and discard any that are lower than the average (this can be improved).
 
 We now discard our magnitudes, and save a set of data arrays using the weird and wonderful idea of anchor points. For each anchor point, we
+
+
+https://tvtropes.org/pmwiki/pmwiki.php/Main/StockSoundEffects

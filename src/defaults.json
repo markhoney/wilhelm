@@ -1,13 +1,19 @@
 {
 	"sample": {
 		"rate": 44100,
-		"step": 4410,
-		"size": 4096,
+		"step": 2205,
+		"size": 8192,
 		"window": "hamming"
 	},
-	"fingerprint": {
+	"print": {
 		"gap": 0,
-		"points": 5
+		"points": 10,
+		"magnitude": 0.01
+
+	},
+	"filter": {
+		"low": null,
+		"high": null
 	},
 	"chart": {
 		"width": 160,
