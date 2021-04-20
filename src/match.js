@@ -48,7 +48,7 @@ function centre(needle, haystack) {
 function shazam(needle, haystack) {
 	let score = 0;
 	for (const print of needle) {
-		const matches = haystack.filter((hay) => hay[1] === print[1] && hay[2] === print[2] && hay[3] === print[3]);
+		const matches = haystack.filter((hay) => hay[2] === print[2] && hay[3] === print[3]);
 		score += matches.length;
 	}
 	return score;
