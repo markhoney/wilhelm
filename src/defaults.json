@@ -13,7 +13,8 @@
 	},
 	"filter": {
 		"low": null,
-		"high": null
+		"high": null,
+		"threshold": 0.5
 	},
 	"chart": {
 		"width": 160,
