@@ -1,25 +1,7 @@
-const {fft, stft} = require('./fft');
-const peaks = require('./peaks');
-const bands = require('./bands');
-
-// const square = (arr) => arr.map((element) => Math.pow(element, 2));
-
-/* function normalise(array, value) {
-	const ratio = Math.max.apply(Math, array) / value;
-	return array.map((element) => element / ratio);
-} */
-
-function audioPrint(wav, config) {
-	const slices = stft(wav, config.sample);
-	for (const slice of slices) {
-		const prints = bands(slice, config.print.magnitude).map((band) => [time, Math.round(band[0] * config.sample.rate / (config.sample.size * 2)), band[1]]);
-		fingerprint.push(...prints);
-	}
-	return fingerprint;
-}
+const points = require('./points');
 
 function zonesDict(wav, config) {
-	const print = audioPrint(wav, config);
+	const print = points(wav, config);
 	const zones = {};
 	while (print.length > config.print.gap + config.print.points) {
 		const anchor = print.shift();
@@ -33,7 +15,7 @@ function zonesDict(wav, config) {
 }
 
 function centreZonesArray(wav, config) {
-	const print = audioPrint(wav, config);
+	const print = points(wav, config);
 	const zones = [];
 	while (print.length > config.print.gap + config.print.points) {
 		const anchor = print.shift();
@@ -45,7 +27,7 @@ function centreZonesArray(wav, config) {
 }
 
 function centreZoneArray(wav, config) {
-	const print = audioPrint(wav, config);
+	const print = points(wav, config);
 	// console.log(print);
 	const mid = Math.floor(print.length / 2);
 	const anchor = print.splice(mid, 1)[0];
@@ -59,7 +41,7 @@ function centreZoneArray(wav, config) {
 }
 
 function zoneArray(wav, config) {
-	const print = audioPrint(wav, config);
+	const print = points(wav, config);
 	const zones = [];
 	const anchor = print.shift();
 	while (print.length) {
@@ -70,7 +52,7 @@ function zoneArray(wav, config) {
 }
 
 function zonesArray(wav, config) {
-	const print = audioPrint(wav, config);
+	const print = points(wav, config);
 	const zones = [];
 	while (print.length > config.print.gap + config.print.points) {
 		const anchor = print.shift();
@@ -82,7 +64,6 @@ function zonesArray(wav, config) {
 }
 
 module.exports = {
-	print: audioPrint,
 	zones: zonesArray,
 	centre: centreZoneArray,
 };

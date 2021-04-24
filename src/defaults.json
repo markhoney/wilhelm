@@ -8,8 +8,8 @@
 	"print": {
 		"gap": 0,
 		"points": 10,
-		"magnitude": 0.01
-
+		"magnitude": 0.01,
+		"peaks": false
 	},
 	"filter": {
 		"low": null,

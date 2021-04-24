@@ -11,9 +11,7 @@ function stft(wav, config, start = 0, length = 9999999) {
 	const slices = [];
 	while (start + config.size < wav.length && count < length) {
 		let slice = wav.slice(start, start + config.size);
-		const time = Math.floor(start * 1000 / config.rate);
-		const transform = fft(slice, config.window);
-		slices.push(...prints);
+		slices.push(fft(slice));
 		start += config.step;
 		count++;
 	}
