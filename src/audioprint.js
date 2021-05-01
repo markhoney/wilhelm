@@ -1,6 +1,4 @@
-const {fft, stft} = require('./fft');
-const peaks = require('./peaks');
-const bands = require('./bands');
+const {stft} = require('./fft');
 
 // const square = (arr) => arr.map((element) => Math.pow(element, 2));
 
@@ -8,15 +6,6 @@ const bands = require('./bands');
 	const ratio = Math.max.apply(Math, array) / value;
 	return array.map((element) => element / ratio);
 } */
-
-function audioPrint(wav, config) {
-	const slices = stft(wav, config.sample);
-	for (const slice of slices) {
-		const prints = bands(slice, config.print.magnitude).map((band) => [time, Math.round(band[0] * config.sample.rate / (config.sample.size * 2)), band[1]]);
-		fingerprint.push(...prints);
-	}
-	return fingerprint;
-}
 
 function zonesDict(wav, config) {
 	const print = audioPrint(wav, config);

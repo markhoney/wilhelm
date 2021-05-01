@@ -1,15 +1,19 @@
 {
 	"sample": {
 		"rate": 44100,
+		"normalise": true
+	},
+	"analyse": {
 		"step": 2205,
 		"size": 8192,
-		"window": "hamming"
+		"window": "hamming",
+		"threshold": "absolute",
+		"magnitude": 0.01,
+		"mode": "bands"
 	},
 	"print": {
 		"gap": 0,
-		"points": 10,
-		"magnitude": 0.01
-
+		"points": 10
 	},
 	"filter": {
 		"low": null,
