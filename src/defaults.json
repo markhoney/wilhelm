@@ -3,22 +3,21 @@
 		"rate": 44100,
 		"normalise": true
 	},
-	"analyse": {
-		"step": 2205,
+	"frame": {
 		"size": 8192,
-		"window": "hamming",
+		"step": 2205,
+		"window": "hamming"
+	},
+	"filter": {
+		"mode": "bands",
+		"low": null,
+		"high": null,
 		"threshold": "absolute",
-		"magnitude": 0.01,
-		"mode": "bands"
+		"magnitude": 0.01
 	},
 	"print": {
 		"gap": 0,
 		"points": 10
-	},
-	"filter": {
-		"low": null,
-		"high": null,
-		"threshold": 0.5
 	},
 	"chart": {
 		"width": 160,
