@@ -10,6 +10,7 @@
 	},
 	"filter": {
 		"mode": "bands",
+		"limit": 8,
 		"low": null,
 		"high": null,
 		"threshold": "absolute",

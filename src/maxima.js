@@ -1,3 +1,5 @@
+const slayer = require('slayer');
+
 function normalise(peaks) {
 	peaks = peaks.filter((peak) => peak.frequency !== 0);
 	const maxmagnitude = Math.max(...peaks.map((peak) => peak.magnitude));
@@ -10,8 +12,6 @@ function filter(peaks, threshold) {
 		// .sort((a, b) => b.magnitude - a.magnitude)
 		.filter((peak) => peak[1] > threshold);
 }
-
-const slayer = require('slayer');
 
 const methods = {
 	bands(fft) {
@@ -32,24 +32,16 @@ const methods = {
 	}
 };
 
-async function maximaOld(fft, config) {
-	let maxima = methods[config.analyse.mode](fft);
-	maxima = peaks.map((peak) => [Math.round(peak[0] * config.sample.rate / (config.sample.size * 2)), peak[1]]);
-	maxima = filter(normalise(peaks), config.filter.threshold);
-	return peaks;
-}
-
-function maxima(maxima, magnitude = false) {
-	if (magnitude) return filter(maxima, magnitude);
-	const average = bands.reduce((sum, band) => sum + band[1], 0) / (bands.length + 1);
+function filterMaxima(peaks, magnitude = false) {
+	if (magnitude) return filter(peaks, magnitude);
+	const average = peaks.reduce((sum, band) => sum + band[1], 0) / (bands.length + 1);
 	return filter(bands, average);
 }
 
-async function maximaMode(fft, mode = 'bands', magnitude = false) {
-	let maxima = await methods[mode](fft);
-	if (magnitude) return filter(maxima, magnitude);
-	const average = bands.reduce((sum, band) => sum + band[1], 0) / (bands.length + 1);
-	return filter(bands, average);
+async function fftToMaxima(fft, mode, magnitude) {
+	const peaks = await methods[mode](fft);
+	return filterMaxima(peaks, magnitude);
 }
+
 
 module.exports = {...methods, maxima};

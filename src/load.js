@@ -1,27 +1,54 @@
-const {existsSync, readFileSync, unlinkSync} = require('fs');
+const {existsSync, readFileSync, writeFileSync, unlinkSync} = require('fs');
 const {resolve} = require('path');
 const ffmpeg = require('ffmpeg-static');
 const {execSync} = require('child_process');
 const nodewav = require('node-wav');
 
-function extractAudio(input, samplerate = 44100) {
+function videoToAudioFile(input, sampleRate = 44100) {
 	const tempfile = resolve(__dirname, 'temp', 'output.wav');
 	if (existsSync(tempfile)) unlinkSync(tempfile);
-	execSync(`${ffmpeg} -i "${input}" -ac 1 -ar ${samplerate} -vn "${tempfile}"`, {stdio: 'pipe'});
+	execSync(`${ffmpeg} -i "${input}" -ac 1 -ar ${sampleRate} -vn "${tempfile}"`, {stdio: 'pipe'});
 	return tempfile;
 }
 
-function getWav(input, samplerate) {
-	const tempfile = extractAudio(input, samplerate);
-	const wav = readFileSync(tempfile);
-	unlinkSync(tempfile);
+function fileToWAV(input, remove = false) {
+	const wav = readFileSync(input);
+	if (remove) unlinkSync(input);
 	return wav;
 }
 
-function getAudio(input, samplerate) {
-	const wav = getWav(input, samplerate);
-	const audio = nodewav.decode(wav);
-	return audio.channelData[0];
+function wavToArray(wav) {
+	return nodewav.decode(wav).channelData[0];
 }
 
-module.exports = getAudio;
+function fileToArray(input, remove) {
+	const wav = fileToWAV(input, remove);
+	return wavToArray(wav);
+}
+
+function videoToArray(filename, sampleRate) {
+	const input = videoToAudioFile(filename, sampleRate);
+	return fileToArray(input, true);
+}
+
+function arrayToWAV(input, sampleRate) {
+	return nodewav.encode(input, {sampleRate, float: true, bitDepth: 32});
+}
+
+function wavToFile(wav, output) {
+	output = resolve(output);
+	if (!output.toLowerCase().endsWith('.wav')) output += '.wav';
+	writeFileSync(output, wav);
+	return output;
+}
+
+function arrayToFile(input, sampleRate, output) {
+	const wav = arrayToWAV(input, sampleRate);
+	return wavToFile(wav, output);
+}
+
+module.exports = {
+	videoToArray,
+	fileToArray,
+	arrayToFile,
+};
