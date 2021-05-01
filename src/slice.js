@@ -10,7 +10,7 @@ function slices(wav, analyse, start = 0, length = 9999999) {
 		start += analyse.step;
 		count++;
 	}
-	return fingerprint;
+	return slices;
 }
 
-module.exports = slices;
+module.exports = slice;
