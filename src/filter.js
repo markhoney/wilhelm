@@ -7,11 +7,11 @@ function threshold(peaks, threshold) {
 }
 
 const filters = {
-	bands(fft) {
+	bands(fft, limit) {
 		const bands = [];
-		const limit = fft.length / 64;
-		while (fft.length > limit) {
+		while (bands.length < limit) {
 			const half = Math.ceil(fft.length / 2);
+			console.log(half);
 			const band = fft.splice(half);
 			const max = Math.max(...band);
 			const index = band.indexOf(max);
@@ -19,21 +19,21 @@ const filters = {
 		}
 		return bands.reverse();
 	},
-	peaks: async(fft) => {
+	peaks: async(fft, limit) => {
 		const peaks = await slayer().fromArray(fft);
 		return peaks.map((peak) => [peak.x, peak.y]);
-	}
+	},
 };
 
 function maxima(peaks, magnitude = false) {
 	if (magnitude) return threshold(peaks, magnitude);
-	const average = peaks.reduce((sum, band) => sum + band[1], 0) / (bands.length + 1);
-	return threshold(bands, average);
+	const average = peaks.reduce((sum, band) => sum + band[1], 0) / (peaks.length + 1);
+	return threshold(peaks, average);
 }
 
 function fft(fft, mode, magnitude) {
 	const peaks = filters[mode](fft);
-	return filterMaxima(peaks, magnitude);
+	return maxima(peaks, magnitude);
 }
 
 module.exports = {filters, maxima, fft};
