@@ -2,7 +2,7 @@
 	"sample": {
 		"rate": 44100
 	},
-	"chunk": {
+	"stft": {
 		"size": 8192,
 		"step": 2205,
 		"window": "hamming",

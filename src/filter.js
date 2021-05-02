@@ -6,7 +6,7 @@ function threshold(peaks, threshold) {
 		.filter((peak) => peak[1] > threshold);
 }
 
-const filter = {
+const filters = {
 	bands(fft) {
 		const bands = [];
 		const limit = fft.length / 64;
@@ -25,15 +25,15 @@ const filter = {
 	}
 };
 
-function filterMaxima(peaks, magnitude = false) {
+function maxima(peaks, magnitude = false) {
 	if (magnitude) return threshold(peaks, magnitude);
 	const average = peaks.reduce((sum, band) => sum + band[1], 0) / (bands.length + 1);
 	return threshold(bands, average);
 }
 
-async function fftToMaxima(fft, mode, magnitude) {
-	const peaks = await methods[mode](fft);
+function fft(fft, mode, magnitude) {
+	const peaks = filters[mode](fft);
 	return filterMaxima(peaks, magnitude);
 }
 
-module.exports = {maxima, fftToMaxima};
+module.exports = {filters, maxima, fft};

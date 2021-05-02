@@ -1,4 +1,4 @@
-async function commandline() {
+function commandline() {
 	const headers = {
 		score: 'Best fit',
 		sample: 'Sample',
@@ -22,7 +22,7 @@ async function commandline() {
 		console.error(`Could not find haystack file (expected ${config.haystack})`);
 		return;
 	}
-	const results = await analyse(config.needle, config.haystack, config.expected);
+	const results = analyse(config.needle, config.haystack, config.expected);
 	console.log(results);
 	results.delta = round(results.delta) + 's';
 	results.rate = round(results.rate) + 'x';
