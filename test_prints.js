@@ -1,8 +1,4 @@
-const config = require('./src/defaults');
-const load = require('./src/load');
-const audioprint = require('./src/audioprint');
-const match = require('./src/match');
-const tests = require('./src/tests');
+const audio = require('./src');
 
 const wilhelm = load('./samples/Wilhelm_tk4.wav', config.sample.rate);
 const print = points(wav, config);

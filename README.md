@@ -11,3 +11,8 @@ Once we have an array of frequency magnitudes, we need to use a form of [percept
 We now discard our magnitudes, and save a set of data arrays using the weird and wonderful idea of anchor points. For each anchor point, we save data about a set of points close to the anchor - each point's frequency and temporal distance from the anchor.
 
 A future avenue might be to use some kind of distance measurement - possibly by encoding all data points as ASCII strings and using an [Edit Distance](https://en.wikipedia.org/wiki/Edit_distance) algorithm such as the [Levenshtein Distance](https://www.npmjs.com/package/levenshtein).
+
+Further reading:
+
+[https://en.wikipedia.org/wiki/Time%E2%80%93frequency_analysis](https://en.wikipedia.org/wiki/Time%E2%80%93frequency_analysis)
+[https://en.wikipedia.org/wiki/Time%E2%80%93frequency_analysis_for_music_signals](https://en.wikipedia.org/wiki/Time%E2%80%93frequency_analysis_for_music_signals)

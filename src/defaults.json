@@ -1,12 +1,12 @@
 {
 	"sample": {
-		"rate": 44100,
-		"normalise": true
+		"rate": 44100
 	},
-	"frame": {
+	"chunk": {
 		"size": 8192,
 		"step": 2205,
-		"window": "hamming"
+		"window": "hamming",
+		"normalise": true
 	},
 	"filter": {
 		"mode": "bands",

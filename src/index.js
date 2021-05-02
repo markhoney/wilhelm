@@ -1,10 +1,10 @@
 module.exports = {
 	config: require('./defaults'),
 	tests: require('./tests'),
-	load: require('./load'),
+	file: require('./file'),
 	fft: require('./fft'),
+	filter: require('./filter'),
 	points: require('./points'),
-	peaks: require('./peaks'),
 	print: require('./print'),
 	match: require('./match'),
 };

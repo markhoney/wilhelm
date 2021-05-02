@@ -21,14 +21,14 @@ function wavToArray(wav) {
 	return nodewav.decode(wav).channelData[0];
 }
 
-function fileToArray(input, remove) {
+function wavFileToArray(input, remove) {
 	const wav = fileToWAV(input, remove);
 	return wavToArray(wav);
 }
 
-function videoToArray(filename, sampleRate) {
+function fileToArray(filename, sampleRate) {
 	const input = videoToAudioFile(filename, sampleRate);
-	return fileToArray(input, true);
+	return wavFileToArray(input, true);
 }
 
 function arrayToWAV(input, sampleRate) {
@@ -48,7 +48,6 @@ function arrayToFile(input, sampleRate, output) {
 }
 
 module.exports = {
-	videoToArray,
-	fileToArray,
-	arrayToFile,
+	load: fileToArray,
+	save: arrayToFile,
 };
