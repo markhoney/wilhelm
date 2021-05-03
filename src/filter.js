@@ -31,7 +31,6 @@ const filters = {
 		const bands = [];
 		while (bands.length < limit) {
 			const half = Math.ceil(fft.length / 2);
-			console.log(half);
 			const band = fft.splice(half);
 			const max = Math.max(...band);
 			const index = band.indexOf(max);

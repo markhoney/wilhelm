@@ -6,7 +6,6 @@ function test() {
 	const stft = audio.fft.stft(wilhelm, audio.config.stft);
 	const filtered = [];
 	audio.fft.stft(wilhelm, audio.config.stft, (fft) => {
-		console.log('fft', fft);
 		const filter = audio.filter.fft(fft, 'bands');
 		filtered.push(filter);
 	});

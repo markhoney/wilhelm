@@ -1,4 +1,4 @@
-const ft = require('fourier-transform');
+const ft = require('fourier-transform'); // /asm
 var applyWindow = require('window-function/apply');
 
 function slice(wav, size = 8192, step = 4410, callback = null) {
@@ -21,8 +21,9 @@ function fft(wav, window) {
 function stft(wav, {size, step, window, normalise} = {}, callback = null) {
 	const stft = [];
 	slice(wav, size, step, (slice, index) => {
-		if (callback) callback(slice, index);
-		else stft.push(fft(slice, window));
+		const fftSlice = Array.from(fft(slice, window));
+		if (callback) callback(fftSlice);
+		else stft.push(fftSlice);
 	});
 	if (stft.length && normalise) {
 		const factor = 1 / Math.max(...stft.flat());
