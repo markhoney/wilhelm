@@ -6,10 +6,11 @@ function test() {
 	const stft = audio.fft.stft(wilhelm, audio.config.stft);
 	const filtered = [];
 	audio.fft.stft(wilhelm, audio.config.stft, (fft) => {
-		const filter = audio.filter.fft(fft, 'bands');
+		const filter = audio.filter.fft(fft, 'peaks');
+		console.log(filter);
 		filtered.push(filter);
 	});
-	console.log(filtered);
+	// console.log(filtered);
 	/* const needle = audio.print.centre(print, audio.config);
 	for (const test of audio.tests) {
 		const sample = audio.load(`./test/${test.file}`, audio.config.sample.rate);

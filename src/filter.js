@@ -2,7 +2,9 @@
 
 function smoothArray(array, width) {
 	return array.map((intensity, index, array) => {
-		const values = array.slice(index - width, index + width + 1);
+		let start = index - width;
+		if (start < 0) start = 0;
+		const values = array.slice(start, index + width + 1);
 		return values.reduce((a, b) => a + b) / values.length;
 	});
 }
@@ -10,14 +12,14 @@ function smoothArray(array, width) {
 function detectPeaks(array, smooth = 0) {
 	if (smooth) array = smoothArray(array, smooth);
 	return array.reduce((peaks, intensity, index, array) => {
-		if ((index = 0 || array[index - 1] < intensity) && (index = array.length - 1 || array[index + 1] < intensity)) peaks.push([index, intensity]);
+		if ((index === 0 || (array[index - 1] < intensity)) && (index === array.length - 1 || (array[index + 1] < intensity))) peaks.push([index, intensity]);
 		return peaks;
 	}, []);
 }
 
 function limitPeaks(array, limit) {
-	if (limit) array = array.sort((a, b) => a[1] - b[1]).slice(0, limit);
-	return array.sort((a, b) => b[0] - a[0]);
+	if (limit) array = array.sort((a, b) => b[1] - a[1]).slice(0, limit);
+	return array.sort((a, b) => a[0] - b[0]);
 }
 
 function threshold(peaks, threshold) {

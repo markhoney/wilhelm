@@ -17,6 +17,7 @@
 		"magnitude": 0.01
 	},
 	"print": {
+		"type": "fractional",
 		"gap": 0,
 		"points": 10
 	},
