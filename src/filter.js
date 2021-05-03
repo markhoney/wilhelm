@@ -1,5 +1,24 @@
 const slayer = require('slayer');
 
+function smooth(fft, width) {
+	return fft.map((frequency, index) => {
+		let sum = frequency;
+		for (let i = 1; i <= width; i++) {
+			sum += fft[index + i] ?? frequency;
+			sum += fft[index - i] ?? frequency;
+		}
+		return sum / (width * 2) + 1;
+	});
+	return fft.map((frequency, index) => {
+		const values = fft.slice(index - width, index + width);
+		return values.reduce((a, b) => a + b) / values.length;
+	});
+}
+
+function detectPeaks(fft) {
+
+}
+
 function threshold(peaks, threshold) {
 	return peaks
 		// .sort((a, b) => b.magnitude - a.magnitude)
