@@ -1,22 +1,23 @@
-const slayer = require('slayer');
+// const slayer = require('slayer');
 
-function smooth(fft, width) {
-	return fft.map((frequency, index) => {
-		let sum = frequency;
-		for (let i = 1; i <= width; i++) {
-			sum += fft[index + i] ?? frequency;
-			sum += fft[index - i] ?? frequency;
-		}
-		return sum / (width * 2) + 1;
-	});
-	return fft.map((frequency, index) => {
-		const values = fft.slice(index - width, index + width);
+function smoothArray(array, width) {
+	return array.map((intensity, index, array) => {
+		const values = array.slice(index - width, index + width + 1);
 		return values.reduce((a, b) => a + b) / values.length;
 	});
 }
 
-function detectPeaks(fft) {
+function detectPeaks(array, smooth = 0) {
+	if (smooth) array = smoothArray(array, smooth);
+	return array.reduce((peaks, intensity, index, array) => {
+		if ((index = 0 || array[index - 1] < intensity) && (index = array.length - 1 || array[index + 1] < intensity)) peaks.push([index, intensity]);
+		return peaks;
+	}, []);
+}
 
+function limitPeaks(array, limit) {
+	if (limit) array = array.sort((a, b) => a[1] - b[1]).slice(0, limit);
+	return array.sort((a, b) => b[0] - a[0]);
 }
 
 function threshold(peaks, threshold) {
@@ -26,7 +27,7 @@ function threshold(peaks, threshold) {
 }
 
 const filters = {
-	bands(fft, limit) {
+	bands(fft, limit = 10) {
 		const bands = [];
 		while (bands.length < limit) {
 			const half = Math.ceil(fft.length / 2);
@@ -38,10 +39,14 @@ const filters = {
 		}
 		return bands.reverse();
 	},
-	peaks: async(fft, limit) => {
+	peaks: (fft, limit = 10, smooth = 1) => {
+		const peaks = detectPeaks(fft, smooth);
+		return limitPeaks(peaks, limit);
+	},
+	/* peaks: async(fft, limit) => {
 		const peaks = await slayer().fromArray(fft);
 		return peaks.map((peak) => [peak.x, peak.y]);
-	},
+	}, */
 };
 
 function maxima(peaks, magnitude = false) {
