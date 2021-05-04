@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: command.js</title>
+    <title>JSDoc: Source: svg.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: command.js</h1>
+    <h1 class="page-title">Source: svg.js</h1>
 
     
 
@@ -26,54 +26,108 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const config = require('./config');
+            <pre class="prettyprint source linenums"><code>const {writeFileSync} = require('fs');
+const vega = require('vega');
 
 /**
- * Reads the command line arguments and runs an audio search
- * @returns {Boolean} Whether the command succeeded
+ * Draw an SVG bar chart of an array, and save it to a file
+ * @param {number[]} ft Fourier Transform
+ * @param {string} filename Output filename
+ * @returns {vega.View} Vega view object
  */
-function commandline() {
-	const headers = {
-		score: 'Best fit',
-		sample: 'Sample',
-		seconds: 'Length',
-		timecode: 'Timecode',
-		expected: 'Expected',
-		delta: 'Delta',
-		length: 'Length',
-		loadTime: 'Load',
-		processTime: 'Process',
-		rate: 'Rate',
-		haystack: 'File',
+function chart(ft, filename) {
+	// console.log(wave);
+	const values = ft.map((value, index) => ({x: index, y: value}));
+	// console.log(values);
+	const chart = {
+		$schema: 'https://vega.github.io/schema/vega/v5.json',
+		description: 'Wilhelm Scream Frequency distribution',
+		width: 400,
+		height: 200,
+		padding: 5,
+		data: [{name: 'table', values}],
+		signals: [
+			{
+				name: 'interpolate',
+				value: 'linear',
+				bind: {
+					input: "select",
+					options: [
+						"basis",
+						"cardinal",
+						"catmull-rom",
+						"linear",
+						"monotone",
+						"natural",
+						"step",
+						"step-after",
+						"step-before",
+					],
+				},
+			},
+		],
+		scales: [
+			{
+				name: 'xscale',
+				type: 'linear',
+				range: 'width',
+				nice: true,
+				zero: false,
+				domain: {
+					data: 'table',
+					field: 'x',
+				},
+			},
+			{
+				name: 'yscale',
+				type: 'linear',
+				range: 'height',
+				nice: true,
+				zero: true,
+				domain: {
+					data: 'table',
+					field: 'y',
+				},
+			},
+		],
+		axes: [
+			{
+				orient: 'bottom',
+				scale: 'xscale',
+				tickCount: 10,
+			},
+			{
+				orient: 'left',
+				scale: 'yscale',
+			},
+		],
+		marks: [
+			{
+				type: 'line',
+				from: {
+					data: 'table',
+				},
+				encode: {
+					enter: {
+						x: {
+							scale: 'xscale',
+							field: 'x',
+						},
+						y: {
+							scale: 'yscale',
+							field: 'y',
+						},
+					},
+				},
+			},
+		],
 	};
-	config.needle = resolve(config._[0]);
-	if (!existsSync(config.needle)) {
-		console.error(`Could not find needle file (expected ${config.needle})`);
-		return;
-	}
-	config.haystack = resolve(config._[1]);
-	if (!existsSync(config.haystack)) {
-		console.error(`Could not find haystack file (expected ${config.haystack})`);
-		return;
-	}
-	const results = analyse(config.needle, config.haystack, config.expected);
-	console.log(results);
-	results.delta = round(results.delta) + 's';
-	results.rate = round(results.rate) + 'x';
-	results.score = round(results.score);
-	results.timecode += 's';
-	results.expected = config.expected + 's';
-	results.loadTime += 's';
-	results.processTime += 's';
-	results.haystack = config.haystack.split('.').slice(0, -1).join('.');
-	if (config.console !== false) {
-		const summary = Object.keys(results).reduce((stats, stat) => ({...stats, [headers[stat]]: results[stat]}), {});
-		console.info(lines(summary));
-	}
-	return true;
+	const view = new vega.View(vega.parse(chart), {renderer: 'none'});
+	view.toSVG().then((svg) => writeFileSync(filename + '.svg', svg));
+	return view;
 }
 
-module.exports = commandline;
+module.exports = chart;
 </code></pre>
         </article>
     </section>

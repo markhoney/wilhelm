@@ -1,7 +1,13 @@
 const {writeFileSync} = require('fs');
 const vega = require('vega');
 
-module.exports = function chart(ft, filename) {
+/**
+ * Draw an SVG bar chart of an array, and save it to a file
+ * @param {number[]} ft Fourier Transform
+ * @param {string} filename Output filename
+ * @returns {vega.View} Vega view object
+ */
+function chart(ft, filename) {
 	// console.log(wave);
 	const values = ft.map((value, index) => ({x: index, y: value}));
 	// console.log(values);
@@ -90,4 +96,7 @@ module.exports = function chart(ft, filename) {
 	};
 	const view = new vega.View(vega.parse(chart), {renderer: 'none'});
 	view.toSVG().then((svg) => writeFileSync(filename + '.svg', svg));
+	return view;
 }
+
+module.exports = chart;

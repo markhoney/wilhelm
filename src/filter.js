@@ -1,7 +1,5 @@
-// const slayer = require('slayer');
-
 /**
- *
+ * Smooths an array by averaging several values
  * @param {number[]} array Fourier Transform
  * @param {number} width Number of values on either side to average over
  * @returns {number[]} Smoothed array
@@ -16,7 +14,7 @@ function smoothArray(array, width) {
 }
 
 /**
- * Takes a Fourier Transform and returns an list of peaks
+ * Takes a Fourier Transform and returns a list of peaks
  * @param {number[]} array Fourier Transform
  * @param {number} smooth Number of values on either side to average over
  * @returns {array[]} Set of peaks
@@ -30,7 +28,7 @@ function detectPeaks(array, smooth = 0) {
 }
 
 /**
- * Return a limited number of peak frequencies
+ * Returns a limited number of peak frequencies
  * @param {array[]} array Set of peaks
  * @param {number} limit Maximum number of peaks to return
  * @returns {array[]} Filtered set of peaks
@@ -100,9 +98,9 @@ function maxima(peaks, magnitude = false) {
 }
 
 /**
- *
+ * Filters a Fourier Transform to only return the most significant frequencies and their amplitudes
  * @param {number[]} fft Fourier Transform array
- * @param {string} mode bands or peaks
+ * @param {string} mode Which method to use for choosing the frequencies: bands or peaks
  * @param {number} magnitude Maximum peak amplitude
  * @returns {array[]} Filtered set of peaks
  */
