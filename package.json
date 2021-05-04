@@ -5,6 +5,7 @@
   "main": "find.js",
   "scripts": {
     "find": "node find",
+    "docs": "jsdoc src -r -d docs",
     "up": "yarn upgrade && yarn upgrade-interactive --latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -36,5 +37,8 @@
     "wav": "^1.0.2",
     "window-function": "^2.1.0",
     "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.6.6"
   }
 }

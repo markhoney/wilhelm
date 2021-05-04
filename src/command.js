@@ -1,3 +1,9 @@
+const config = require('./config');
+
+/**
+ * Reads the command line arguments and runs an audio search
+ * @returns {Boolean} Whether the command succeeded
+ */
 function commandline() {
 	const headers = {
 		score: 'Best fit',
@@ -36,6 +42,7 @@ function commandline() {
 		const summary = Object.keys(results).reduce((stats, stat) => ({...stats, [headers[stat]]: results[stat]}), {});
 		console.info(lines(summary));
 	}
+	return true;
 }
 
 module.exports = commandline;
