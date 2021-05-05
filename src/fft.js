@@ -43,8 +43,8 @@ function stft(wav, {size, step, window, normalise} = {}, callback = null) {
 	const stft = [];
 	slice(wav, size, step, (slice, index) => {
 		const fftSlice = Array.from(fft(slice, window));
-		for (const peak of fftSlice) peak.unshift();
-		if (callback) callback(fftSlice);
+		// for (const peak of fftSlice) peak.unshift();
+		if (callback) callback(fftSlice, index);
 		else stft.push(fftSlice);
 	});
 	if (stft.length && normalise) {
