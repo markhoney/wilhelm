@@ -1,3 +1,10 @@
+/**
+ *
+ * @param {number[]} anchor FTT peak - [time, frequency, amplitude]
+ * @param {number[]} point FFT peak
+ * @param {string} mode How to relate the anchor and point. One of absolute, relative, fractional, differential or proportional
+ * @returns FFT peak
+ */
 function createPrint(anchor, point, mode = 'absolute') {
 	if (mode === 'absolute') return [point[0], point[1], point[2]];
 	else if (mode === 'relative') return [point[0] - anchor[0], point[1] - anchor[1], point[2] - anchor[2]];
