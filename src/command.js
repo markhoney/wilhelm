@@ -1,4 +1,4 @@
-const config = require('./config');
+const audio = require('./audio');
 
 /**
  * Reads the command line arguments and runs an audio search
@@ -18,27 +18,28 @@ function commandline() {
 		rate: 'Rate',
 		haystack: 'File',
 	};
-	config.needle = resolve(config._[0]);
-	if (!existsSync(config.needle)) {
-		console.error(`Could not find needle file (expected ${config.needle})`);
+	audio.config.needle = resolve(audio.config._[0]);
+	if (!existsSync(audio.config.needle)) {
+		console.error(`Could not find needle file (expected ${audio.config.needle})`);
 		return;
 	}
-	config.haystack = resolve(config._[1]);
-	if (!existsSync(config.haystack)) {
-		console.error(`Could not find haystack file (expected ${config.haystack})`);
+	audio.config.haystack = resolve(audio.config._[1]);
+	if (!existsSync(audio.config.haystack)) {
+		console.error(`Could not find haystack file (expected ${audio.config.haystack})`);
 		return;
 	}
-	const results = analyse(config.needle, config.haystack, config.expected);
+	audio.config.output = resolve(audio.config._[2]);
+	const results = audio.analyse(audio.config.needle, audio.config.haystack, audio.config.expected);
 	console.log(results);
 	results.delta = round(results.delta) + 's';
 	results.rate = round(results.rate) + 'x';
 	results.score = round(results.score);
 	results.timecode += 's';
-	results.expected = config.expected + 's';
+	results.expected = audio.config.expected + 's';
 	results.loadTime += 's';
 	results.processTime += 's';
-	results.haystack = config.haystack.split('.').slice(0, -1).join('.');
-	if (config.console !== false) {
+	results.haystack = audio.config.haystack.split('.').slice(0, -1).join('.');
+	if (audio.config.console !== false) {
 		const summary = Object.keys(results).reduce((stats, stat) => ({...stats, [headers[stat]]: results[stat]}), {});
 		console.info(lines(summary));
 	}

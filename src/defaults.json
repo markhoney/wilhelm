@@ -10,6 +10,7 @@
 	},
 	"filter": {
 		"mode": "bands",
+		"smooth": 0,
 		"limit": 8,
 		"low": null,
 		"high": null,

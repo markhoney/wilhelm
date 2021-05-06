@@ -13,7 +13,7 @@ function getConfig() {
 		.default(defaults)
 		// .config({extends: './config.json'})
 		.config('config', (path) => existsSync(resolve(path)) ? require(path) : existsSync(resolve('./config.js')) || existsSync(resolve('./config.json')) ? require('./config') : {})
-		.usage('Usage: $0 --options [input] [output]')
+		.usage('Usage: $0 --options [needle] [haystack] [output]')
 		.demandCommand(2)
 		.boolean('chart')
 		.boolean('console')

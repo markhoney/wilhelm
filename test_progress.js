@@ -3,16 +3,13 @@ const audio = require('./src');
 function test() {
 	// const wilhelm = audio.file.load('./samples/Wilhelm_tk4.wav', audio.config.sample.rate);
 	const wilhelm = audio.file.load('./samples/Wilhelm_Scream.ogg', audio.config.sample.rate);
-	// console.log(wilhelm);
+	console.log(Math.max(...wilhelm));
 	const stft = audio.fft.stft(wilhelm, audio.config.stft);
 	const filtered = [];
 	audio.fft.stft(wilhelm, audio.config.stft, (fft, index) => {
-		const filter = audio.filter.fft(fft, 'peaks');
-		filtered.push(...filter.map((peak) => [
-			Math.floor(index * 1000 / audio.config.sample.rate),
-			Math.floor(peak[0] * audio.config.sample.rate * 0.5 / audio.config.stft.size),
-			peak[1] * 100,
-		]));
+		const peaks = audio.filter.fft(fft, 'bands', 1, 0);
+		for (const peak of peaks) peak.unshift(index);
+		filtered.push(...audio.scale.peaks(peaks, audio.config.sample.rate, audio.config.stft.size));
 	});
 	console.log(filtered);
 	/* const needle = audio.print.centre(print, audio.config);

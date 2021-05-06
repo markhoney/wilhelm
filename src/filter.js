@@ -59,14 +59,17 @@ const filters = {
 	 */
 	bands(fft, limit = 10) {
 		const bands = [];
-		while (bands.length < limit) {
+		while (bands.length < limit - 1) {
 			const half = Math.ceil(fft.length / 2);
 			const band = fft.splice(half);
 			const max = Math.max(...band);
 			const index = band.indexOf(max);
-			bands.push([fft.length + index, max]); //
+			bands.push([fft.length + index, max]);
 		}
-		return bands.reverse();
+		const max = Math.max(...fft);
+		const index = fft.indexOf(max);
+		bands.push([index, max]);
+	return bands.reverse();
 	},
 	/**
 	 * Finds the frequencies of a set of the largest peak amplitudes in a Fourier Transform
@@ -104,8 +107,8 @@ function maxima(peaks, magnitude = false) {
  * @param {number} magnitude Maximum peak amplitude
  * @returns {array[]} Filtered set of peaks
  */
-function fft(fft, mode, magnitude) {
-	const peaks = filters[mode](fft);
+function fft(fft, mode, limit, magnitude, ...args) {
+	const peaks = filters[mode](fft, limit, ...args);
 	return maxima(peaks, magnitude);
 }
 
