@@ -5,7 +5,7 @@
  * @param {string} mode How to relate the anchor and point. One of absolute, relative, fractional, differential or proportional
  * @returns FFT peak
  */
-function createPrint(anchor, point, mode = 'absolute') {
+function createPrint(anchor, point, mode = 'differential') {
 	if (mode === 'absolute') return [point[0], point[1], point[2]];
 	else if (mode === 'relative') return [point[0] - anchor[0], point[1] - anchor[1], point[2] - anchor[2]];
 	else if (mode === 'fractional') return [point[0] / anchor[0], point[1] / anchor[1], point[2] / anchor[2]];
@@ -14,12 +14,24 @@ function createPrint(anchor, point, mode = 'absolute') {
 	else throw new Error('Invalid mode');
 }
 
-function centreMultiple(print, config) {
+function loudest(print, mode) {
+	print = print.sort((a, b) => b[2] - a[2]);
+	const anchor = print.shift();
 	const zones = [];
-	while (print.length > config.gap + config.points) {
+	zones.push(anchor);
+	while (print.length) {
+		const point = print.pop();
+		zones.push(createPrint(anchor, point, mode));
+	}
+	return zones;
+}
+
+function centreMultiple(print, {gap, points, mode}) {
+	const zones = [];
+	while (print.length > gap + points) {
 		const anchor = print.shift();
-		for (let i = gap; i < config.gap + config.points; i++) {
-			zones.push([anchor.slice(0, 1), createPrint(anchor, point, config.mode)]); // [anchor[time, frequency], relative[time, frequency, magnitude]]
+		for (let i = gap; i < gap + points; i++) {
+			zones.push([anchor.slice(0, 1), createPrint(anchor, point, mode)]); // [anchor[time, frequency], relative[time, frequency, magnitude]]
 		}
 	}
 	return zones;
@@ -59,7 +71,8 @@ function zones(print, config) {
 }
 
 module.exports = {
-	print: createPrint,
+	loudest,
+	create: createPrint,
 	zones,
 	centre: centreSingle,
 };

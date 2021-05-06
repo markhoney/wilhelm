@@ -112,4 +112,11 @@ function fft(fft, mode, limit, magnitude, ...args) {
 	return maxima(peaks, magnitude);
 }
 
-module.exports = {filters, maxima, fft};
+function callback(mode, limit, magnitude, ...args) {
+	return (fft) => {
+		const peaks = filters[mode](fft, limit, ...args);
+		return maxima(peaks, magnitude);
+	};
+}
+
+module.exports = {filters, maxima, fft, callback};
