@@ -4,7 +4,7 @@
 	"description": "An audio detector that finds a small audio sample (a needle, or soundbite) in a larger audio file (a haystack)",
 	"main": "find.js",
 	"bin": {
-		"audio-find": "src/cli.js"
+		"soundbyte": "src/cli.js"
 	},
 	"scripts": {
 		"find": "node find",
@@ -39,7 +39,7 @@
 		"vega": "^5.12.3",
 		"wav": "^1.0.2",
 		"window-function": "^2.1.0",
-		"yargs": "^16.2.0"
+		"yargs": "^17.0.1"
 	},
 	"devDependencies": {
 		"jsdoc": "^3.6.6",
