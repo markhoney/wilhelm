@@ -14,7 +14,7 @@ function test() {
 		let start = null;
 		let leastsquares = 9999999999999;
 		audio.fft.stft(batman, audio.config.stft, (fft, index) => {
-			const peaks = audio.filter.fft(fft, 'peaks', 3, 0);
+			const peaks = audio.filter.fft(fft, 'peaks', 5, 0.005);
 			// for (const peak of peaks) peak.unshift(index);
 			haystack.push(peaks);
 			if (haystack.length > needle.length * 1.5) {
