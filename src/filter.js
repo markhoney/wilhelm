@@ -104,12 +104,26 @@ function maxima(peaks, magnitude = false) {
  * Filters a Fourier Transform to only return the most significant frequencies and their amplitudes
  * @param {number[]} fft Fourier Transform array
  * @param {string} mode Which method to use for choosing the frequencies: bands or peaks
+ * @param {number} limit A limit on the number of peaks that should be considered for inclusion
  * @param {number} magnitude Maximum peak amplitude
  * @returns {array[]} Filtered set of peaks
  */
 function fft(fft, mode, limit, magnitude, ...args) {
 	const peaks = filters[mode](fft, limit, ...args);
 	return maxima(peaks, magnitude);
+}
+
+/**
+ *
+ * @param {array[]} stft An array of arrays of Fourier Transforms
+ * @param {string} mode Which method to use for choosing the frequencies: bands or peaks
+ * @param {number} magnitude Maximum peak amplitude
+ * @param {number} limit A limit on the number of peaks that should be considered for inclusion
+ * @returns {array[]} Filtered set of peaks
+ * @returns
+ */
+function stft(stft, mode, limit, magnitude, ...args) {
+	return stft.map((transform) => fft(transform, mode, limit, magnitude, ...args));
 }
 
 function callback(mode, limit, magnitude, ...args) {
@@ -119,4 +133,16 @@ function callback(mode, limit, magnitude, ...args) {
 	};
 }
 
-module.exports = {filters, maxima, fft, callback};
+/**
+ * Flattens an array of stft peaks, prepending the index to each
+ * @param {array[]} stft Array of stft groups of peaks
+ * @returns {array[]} Flat array of peaks as [index, frequency, magnitude]
+ */
+ function flatten(stft) {
+	// console.log(stft);
+	return stft.map((peaks, index) => peaks.map((peak) => [index, ...peak])).flat();
+}
+
+
+
+module.exports = {filters, maxima, fft, stft, flatten, callback};
