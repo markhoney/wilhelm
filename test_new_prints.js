@@ -6,7 +6,7 @@ function test() {
 	// const wilhelm = audio.file.load('./samples/Wilhelm_tk4.wav', audio.config.sample.rate);
 	const wilhelm = audio.file.load('./samples/Wilhelm_Scream.ogg', audio.config.sample.rate);
 	const stft = audio.fft.stft(wilhelm, audio.config.stft);
-	const peaks = audio.filter.stft(stft, 'bands', 1, 0);
+	const peaks = audio.filter.stft(stft, 'peaks', 1, 0);
 	const needle = audio.filter.flatten(peaks);
 	for (const test of tests) {
 		const batman = audio.file.load(resolve(__dirname, 'test', test.file), audio.config.sample.rate);
@@ -14,7 +14,7 @@ function test() {
 		let start = null;
 		let leastsquares = 9999999999999;
 		audio.fft.stft(batman, audio.config.stft, (fft, index) => {
-			const peaks = audio.filter.fft(fft, 'peaks', 1, 0);
+			const peaks = audio.filter.fft(fft, 'peaks', 3, 0);
 			// for (const peak of peaks) peak.unshift(index);
 			haystack.push(peaks);
 			if (haystack.length > needle.length * 1.5) {
