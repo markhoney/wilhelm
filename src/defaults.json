@@ -3,8 +3,8 @@
 		"rate": 44100
 	},
 	"stft": {
-		"size": 8192,
-		"step": 2205,
+		"size": 4096,
+		"step": 4410,
 		"window": "hamming",
 		"normalise": true
 	},

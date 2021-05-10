@@ -37,7 +37,7 @@ function test() {
 				}
 			}
 		});
-		console.log(Math.round(leastsquares / peaks.length), start / audio.config.stft.step, start, test.file);
+		console.log(Math.round(leastsquares / peaks.length), (start / audio.config.stft.step), start / audio.config.sample.rate, start, test.file);
 	}
 }
 
