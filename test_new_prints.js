@@ -26,7 +26,7 @@ function test() {
 					for (const straw of hay) {
 						// console.log(needlet[0], straw[0], needlet[0] - straw[0], needlet[1], straw[1], needlet[1] - straw[1], needlet[2], straw[2], needlet[2] - straw[2]);
 						// const square = Math.pow(needlet[0] - straw[0], 2) + Math.pow(needlet[1] - straw[1], 2) + Math.pow(needlet[2] - straw[2], 2);
-						const square = [0, 1].reduce((total, index) => total + Math.pow(needlet[index] - straw[index], 2), 0);
+						const square = [0, 1, 2].reduce((total, index) => total + Math.pow(needlet[index] - straw[index], 2), 0);
 						if (square < leastsquare) leastsquare = square;
 					}
 					squares += leastsquare;
@@ -37,7 +37,7 @@ function test() {
 				}
 			}
 		});
-		console.log(Math.round(leastsquares), start / audio.config.stft.step, start);
+		console.log(Math.round(leastsquares / peaks.length), start / audio.config.stft.step, start, test.file);
 	}
 }
 
