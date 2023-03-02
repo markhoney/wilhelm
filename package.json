@@ -19,7 +19,7 @@
 		"ffmpeg-static": "^4.3.0",
 		"fourier-transform": "^1.1.2",
 		"node-wav": "^0.0.2",
-		"vega": "^5.12.3",
+		"vega": "^5.23.0",
 		"window-function": "^2.1.0",
 		"yargs": "^17.0.1"
 	},
