@@ -4,7 +4,7 @@
 	},
 	"stft": {
 		"size": 4096,
-		"step": 4410,
+		"step": 2048,
 		"window": "hamming",
 		"normalise": true
 	},
@@ -12,14 +12,14 @@
 		"mode": "bands",
 		"smooth": 0,
 		"limit": 8,
-		"low": null,
-		"high": null,
+		"low": 200,
+		"high": 5000,
 		"threshold": "absolute",
-		"magnitude": 0.01
+		"magnitude": 0.05
 	},
 	"print": {
-		"type": "fractional",
-		"gap": 0,
+		"type": "differential",
+		"gap": 2,
 		"points": 10
 	},
 	"chart": {
@@ -28,6 +28,9 @@
 	},
 	"console": {
 		"pad": 10
+	},
+	"match": {
+		"anchor_threshold_percent": 7
 	},
 	"test": false
 }

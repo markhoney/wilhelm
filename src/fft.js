@@ -48,7 +48,15 @@ function stft(wav, {size, step, window, normalise} = {}, callback = null) {
 		else stft.push(fftSlice);
 	});
 	if (stft.length && normalise) {
-		const factor = 1 / Math.max(...stft.flat());
+		let max_val = 0;
+		for (const slice of stft) {
+			for (const val of slice) {
+				if (val > max_val) {
+					max_val = val;
+				}
+			}
+		}
+		const factor = max_val > 0 ? 1 / max_val : 1; // Avoid division by zero if max_val is 0
 		for (const index of stft.keys()) {
 			stft[index] = stft[index].map((freq) => freq * factor);
 		}
